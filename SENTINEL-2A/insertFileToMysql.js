@@ -60,21 +60,26 @@ function txtToMysql(file) {
     },function (err) {
         if (err) {
         } else {
-            fs.renameSync(file, file + '.over');
+            // fs.renameSync(file, file + '.over');
+            fs.renameSync(file, 
+                path.join(file.substring(0, file.indexOf(`${ind}.txt`)),'over',`${ind}.txt.over`)
+            );
             console.log(file + ' dear over');
             if (task.length) {
                 task.pop()();
             } else {
                 console.log('over');
-                process.exit();
+                // process.exit();
             }
         }
     });
 }
 
-glob(`${projectConfig.targetPath}\\*.txt`,(err, files) => {
-    files.map(f => {
-        task.push(txtToMysql.bind(null, f));
+module.exports = () => {
+    glob(`${projectConfig.targetPath}\\*.txt`,(err, files) => {
+        files.map(f => {
+            task.push(txtToMysql.bind(null, f));
+        });
+        task.pop()();
     });
-    task.pop()();
-});
+};
