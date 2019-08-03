@@ -2,6 +2,7 @@ const insertFileToMysql = require('./insertFileToMysql');
 const fs = require('fs');
 const projectConfig = require('./config.json');
 const emitEventName = 'change';
+const limit = 1000;
 
 let counter = new (class {
     constructor(event, limit) {
@@ -16,14 +17,14 @@ let counter = new (class {
             this.count = 0;
             this.event();
         }
+        return this.count;
     }
 
-})(insertFileToMysql,1000);
+})(insertFileToMysql,limit);
 
 fs.watch(projectConfig.targetPath,function(e, f) {
     let fl = f.split('.');
     if (e === emitEventName && fl.length === 2 && fl[1] === 'txt') {
-        console.log(e,f);
-        counter.add();
+        console.log(`[${counter.add()} / ${limit}] ${e} ${f}`);
     }
 })

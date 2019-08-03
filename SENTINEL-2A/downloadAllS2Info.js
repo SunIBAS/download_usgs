@@ -14,7 +14,8 @@ if (!fs.existsSync(projectInfoPath)) {
     projectInfo = JSON.parse(fs.readFileSync(projectInfoPath));
 }
 let go = false;
-let nextTime = 3;
+let nextTime = 0.5;
+let commonNextTime = 0.5;
 
 let makeErrorInfo = (err) => {
     if ('message' in err) {
@@ -38,22 +39,32 @@ function toDownload() {
                 go = false;
             }, 10)
         }
-        if (body.length < 2400) {
-            nextTime = 60 * 30;
-            go = true;
-            setTimeout(() => {
-                go = false;
-            }, 10)
+        try {
+            if (body.length < 2400) {
+                nextTime = 60 * 30;
+                go = true;
+                setTimeout(() => {
+                    go = false;
+                }, 10)
+            }
+            projectInfo.lastId++;
+            fs.writeFileSync(projectInfoPath,JSON.stringify(projectInfo,'','\t'));
+            fs.writeFileSync(path.join(projectInfo.targetPath, `${projectInfo.lastId - 1}.txt`), body);
+        } catch(e) {
+            console.log(e);
+            console.log(err, resp, body);
+            fs.appendFileSync(projectInfo.errorLogPath,makeErrorInfo(err));
+            fs.appendFileSync(projectInfo.errorLogPath,makeErrorInfo('body' + body));
+            fs.appendFileSync(projectInfo.errorLogPath,makeErrorInfo('resp' + resp));
+        } finally {
+            go = false;
         }
-        projectInfo.lastId++;
-        fs.writeFileSync(projectInfoPath,JSON.stringify(projectInfo,'','\t'));
-        fs.writeFileSync(path.join(projectInfo.targetPath, `${projectInfo.lastId - 1}.txt`), body);
     });
 };
 
 function doing() {
     if (go) {} else {
-        nextTime = 3;
+        nextTime = commonNextTime;
         toDownload();
     }
     setTimeout(doing, nextTime * 1000);

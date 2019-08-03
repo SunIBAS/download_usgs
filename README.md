@@ -30,4 +30,9 @@ const link = `https://earthexplorer.usgs.gov/form/metadatalookup/?collection_id=
 
 > 将 ```downloadAllS2Info.js``` 下载的信息规则后存储到数据
 
+- autoInsertIntoMysql.js
+
+> 通过监听的方式，将下载好的文件自动保存到数据库
+
 - s2a1.sql 是 ```insertFileToMysql.js``` 中用到的表的创建语句
+

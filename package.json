@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "s2a1_to_mysql": "node SENTINEL-2A/autoInsertIntoMysql.js"
+    "s2a1_to_mysql": "node SENTINEL-2A/autoInsertIntoMysql.js",
+    "s2a1_download": "node SENTINEL-2A/downloadAllS2Info.js"
   },
   "dependencies": {
     "async": "^3.1.0",
