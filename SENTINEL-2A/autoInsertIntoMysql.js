@@ -9,15 +9,20 @@ let counter = new (class {
         this.event = event;
         this.count = 0;
         this.limit = limit;
+        this.time = (new Date()).getTime();
+        this.dur = 0;
     }
 
     add() {
         this.count++;
         if (this.count >= this.limit) {
+            let curTime = (new Date()).getTime();
+            this.dur = curTime - this.time;
             this.count = 0;
             this.event();
+            this.time = curTime;
         }
-        return this.count;
+        return `#${this.dur ? this.dur : 'unkonw'} ms# ~~ ${this.count}`;
     }
 
 })(insertFileToMysql,limit);
@@ -28,3 +33,4 @@ fs.watch(projectConfig.targetPath,function(e, f) {
         console.log(`[${counter.add()} / ${limit}] ${e} ${f}`);
     }
 })
+counter.event();

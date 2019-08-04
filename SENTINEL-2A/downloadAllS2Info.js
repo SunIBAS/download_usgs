@@ -14,14 +14,28 @@ if (!fs.existsSync(projectInfoPath)) {
     projectInfo = JSON.parse(fs.readFileSync(projectInfoPath));
 }
 let go = false;
-let nextTime = 0.5;
-let commonNextTime = 0.5;
+let commonNextTime = 0.2;
+let nextTime = commonNextTime;
+
+let objToString = (err) => {
+    let ret = [];
+    for (let i in err) {
+        ret.push(`[${i}]#${err[i]}`);
+    }
+    return ret.join('\n');
+};
 
 let makeErrorInfo = (err) => {
-    if ('message' in err) {
-        err = err.message;
+    err = err ? err : '';
+    if (typeof err === 'object') {
+        if ('message' in err) {
+            err = err.message;
+        } else {
+            err = objToString(err);
+        }
     }
-    return `---------------------------${(new Date()).toLocaleString()}-----------------------------
+    return `
+    ---------------------------${(new Date()).toLocaleString()}-----------------------------
     ${err}
     ##############################################################################################`
 };
@@ -57,6 +71,7 @@ function toDownload() {
             fs.appendFileSync(projectInfo.errorLogPath,makeErrorInfo('body' + body));
             fs.appendFileSync(projectInfo.errorLogPath,makeErrorInfo('resp' + resp));
         } finally {
+            nextTime = 60;
             go = false;
         }
     });
